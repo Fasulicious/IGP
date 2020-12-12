@@ -57,35 +57,40 @@ class PSO:
     c = 2 * np.arctan2(np.sqrt(a), np.sqrt(1- a))
     return 6371 * c
 
+  def check_inside_peru(self, sensor):
+    geolocation = geopip.search(lng = sensor[1], lat = sensor[0])
+    return geolocation != None and geolocation['NAME'] == 'Peru'
+
+  def get_seismic_distance(self, distances):
+    current_distances = np.array(distances)
+    current_distances = np.sort(current_distances)
+    return np.sum(current_distances[0: 3])
+
   # CALCULO DEL FITNESS
   def fitness(self):
-    fitness = []
-    # SE ITERA POR CADA FAMILIA DE SENSORES (POPULATION = 10)
-    for sensors in self.x:
-      total_distance = 0
-      #sensors_inside_peru = 0
-      # SE ITERA POR CADA SISMO
-      for seismic in self.seismics:
-        distances = []
-        #SE ITERA POR CADA SENSOR
-        for sensor in sensors:
-          geolocation = geopip.search(lng = sensor[1], lat = sensor[0])
-          if geolocation != None and geolocation['NAME'] == 'Peru':
-            distances.append(self.get_distance(seismic, sensor))
-          else:  
-            distances.append(3 * self.get_distance(seismic, sensor))
-        distances = np.array(distances)
-        distances = np.sort(distances)
-        total_distance += np.sum(distances[0: 3])
-      '''  
-      for sensor in sensors:
-        geolocation = geopip.search(lng = sensor[1], lat = sensor[0])
-        if geolocation != None and geolocation['NAME'] == 'Peru':
-          sensors_inside_peru += 1
-      '''
-      #current_fitness = total_distance * 2 / (1 + sensors_inside_peru / self.sensors)
-      #fitness.append(current_fitness)
-      fitness.append(total_distance)
+    start = time.time()
+    fitness = [
+      np.sum(
+        [
+          self.get_seismic_distance(
+            [
+              self.get_distance(seismic, sensor)
+              if self.check_inside_peru(sensor)
+              else 3 * self.get_distance(seismic, sensor)
+              for sensor
+              in sensors
+            ]
+          )
+          for seismic
+          in self.seismics
+        ]
+      )
+      for sensors
+      in self.x
+    ]
+    end = time.time()
+    print(end - start)
+    print(fitness)
     return fitness
 
   # SE ACTUALIZA MEJOR GLOBAL, MEJOR PERSONAL
