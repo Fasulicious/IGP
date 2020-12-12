@@ -10,7 +10,7 @@ peruvian_seismics = np.array([s for s in seismics if s[0] < -4.5 or (geopip.sear
 
 for i in range(8):
   pso = PSO(folder = f'0.4-0.5-2.5/{i}', seismics = peruvian_seismics, population = 20, sensors = 52, iterations = 250, w = 0.4, c1 = 0.5, c2 = 2.5, static = True)
-  current_sensors, current_fitness, current_time = pso.train()
+  current_sensors, current_fitness, current_time, fitness_for_graph = pso.train()
   with open(f'./new_results/0.4-0.5-2.5_coordinates_{i}', 'w') as file:
     file.write(np.array_str(current_sensors))
   with open(f'./new_results/0.4-0.5-2.5_fitness_{i}', 'w') as file:

@@ -103,6 +103,7 @@ class PSO:
   # ENTRENAMIENTO
   def train(self):
     start = time.time()
+    best_fitness_for_graph = []
     for i in range(self.iterations):
       current_iteration = i + 1
       print(f'Iteration {i+1} before get the fitness')
@@ -132,6 +133,7 @@ class PSO:
         self.m.scatter(m_sensor_lons, m_sensor_lats, marker = 'X', color = 'r', zorder = 10)
         plt.title(f'Fitness: {self.global_best_fitness}, at iteration: {i}')
         plt.savefig(f'./new_images/{self.folder}/iteration_{i}.png')
+        best_fitness_for_graph.append(self.global_best_fitness)
       # ACTUALIZACION DE PARAMETROS SI ES AUTOAJUSTE
       w = self.w if self.static else self.w_max + (self.w_min - self.w_max) * (current_iteration - 1) / (self.iterations - 1)
       c1 = self.c1 if self.static else self.c1_max + (self.c1_min - self.c1_max) * current_iteration / self.iterations
@@ -182,5 +184,5 @@ class PSO:
     self.m.scatter(m_sensor_lons, m_sensor_lats, marker = 'X', color = 'r', zorder = 10)
     plt.title(f'Fitness: {self.global_best_fitness}, at iteration: {i + 1}')
     plt.savefig(f'./new_images/{self.folder}/iteration_{i}.png')
-    return np.array(self.global_best_sensors), np.array(self.global_best_fitness), np.array(end - start)
+    return np.array(self.global_best_sensors), np.array(self.global_best_fitness), np.array(end - start), best_fitness_for_graph
     
