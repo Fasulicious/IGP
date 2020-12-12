@@ -184,5 +184,5 @@ class PSO:
     self.m.scatter(m_sensor_lons, m_sensor_lats, marker = 'X', color = 'r', zorder = 10)
     plt.title(f'Fitness: {self.global_best_fitness}, at iteration: {i + 1}')
     plt.savefig(f'./new_images/{self.folder}/iteration_{i}.png')
-    return np.array(self.global_best_sensors), np.array(self.global_best_fitness), np.array(end - start), best_fitness_for_graph
+    return np.array(self.global_best_sensors), np.array(self.global_best_fitness), np.array(end - start), np.array(best_fitness_for_graph)
     
