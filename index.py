@@ -28,7 +28,7 @@ def main(args):
   fitnesses = []
 
   for i in range(8):
-    pso = PSO(folder = f'{args[0]}-{args[1]}-{args[2]}/{i}', seismics = peruvian_seismics, population = 25, sensors = 52, iterations = 250, w = float(args[0]), c1 = float(args[1]), c2 = float(args[2]), static = True)
+    pso = PSO(folder = f'{args[0]}-{args[1]}-{args[2]}/{i}', seismics = peruvian_seismics, population = 20, sensors = 52, iterations = 250, w = float(args[0]), c1 = float(args[1]), c2 = float(args[2]), static = True)
     current_sensors, current_fitness, current_time, fitness_for_graph = pso.train()
     fitnesses.append(fitness_for_graph)
     with open(f'./new_results/{args[0]}-{args[1]}-{args[2]}_coordinates_{i}', 'w') as file:
