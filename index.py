@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 import geopip
 from PSO import PSO
-from local_graph import Graph
+#from local_graph import Graph
 import sys
 
 def main(args):
