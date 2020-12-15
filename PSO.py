@@ -1,6 +1,6 @@
 import geopip
 import numpy as np
-import time
+from time import time
 np.seterr(divide='ignore', invalid='ignore')
 
 class PSO:
@@ -37,8 +37,8 @@ class PSO:
       location = [np.random.uniform(-3, -18), np.random.uniform(-69, -82)]
       geolocation = geopip.search(lng = location[1], lat = location[0])
       if geolocation != None and geolocation['NAME'] == 'Peru':
-        temp.append(location)
-    return temp
+        temp.append(np.array(location))
+    return np.array(temp)
   
   # OBTENER DISTANCIA REAL SOBRE LA TIERRA
   def get_distance(self, P, Q):
@@ -50,18 +50,38 @@ class PSO:
     c = 2 * np.arctan2(np.sqrt(a), np.sqrt(1- a))
     return 6371 * c
 
+  
   def check_inside_peru(self, sensor):
     geolocation = geopip.search(lng = sensor[1], lat = sensor[0])
-    return geolocation != None and geolocation['NAME'] == 'Peru'
+    return 3 if geolocation != None and geolocation['NAME'] == 'Peru' else 1
+  
+  def get_multiplier(self, sensors):
+    #return np.array([self.check_inside_peru(sensor) for sensor in sensors])
+    return np.fromiter((self.check_inside_peru(sensor) for sensor in sensors), np.int8)
 
   def get_seismic_distance(self, distances):
     current_distances = np.array(distances)
     current_distances = np.sort(current_distances)
     return np.sum(current_distances[0: 3])
+  
+  def seismic_to_sensors(self, seismic, sensors):
+    multiplier = self.get_multiplier(sensors)
+    return np.fromiter((self.get_distance(seismic, sensor) for sensor in sensors), np.float32) * multiplier
+  
+  def get_distances(self, sensors, seismics):
+    #return np.fromiter((self.seismic_to_sensors(seismic, sensors) for seismic in seismics), np.float32)
+    distances = np.sort(np.array(np.array([self.seismic_to_sensors(seismic, sensors) for seismic in seismics])))
+    return np.sum(distances[0:3])
 
   # CALCULO DEL FITNESS
   def fitness(self):
-    start = time.time()
+    s = time()
+    print(np.sum(np.array([self.get_distances(sensors, self.seismics) for sensors in self.x])))
+    #print(self.get_distances(self.x[0], self.seismics))
+    #print(self.seismic_to_sensors(self.seismics[0], self.x[0]))
+    e = time()
+    print(e - s)
+    '''
     fitness = [
       np.sum(
         [
@@ -81,11 +101,8 @@ class PSO:
       for sensors
       in self.x
     ]
-    end = time.time()
-    print(end - start)
-    print(fitness)
     return fitness
-
+    '''
   # SE ACTUALIZA MEJOR GLOBAL, MEJOR PERSONAL
   def update(self, fitness):
     # MEJOR GLOBAL
