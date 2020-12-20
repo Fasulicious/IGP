@@ -34,8 +34,8 @@ class Graph:
       m_sensor_lons, m_sensor_lats = self.m(self.sensor_lons, self.sensor_lats)
       self.m.scatter(m_seismic_lons, m_seismic_lats, marker = 'o', color = 'b', zorder = 5)
       self.m.scatter(m_sensor_lons, m_sensor_lats, marker = 'X', color = 'r', zorder = 10)
-      plt.title(f'Fitness: {best_fitness}, at iteration: {i * 10}')
-      plt.savefig(f'./images/{self.folder}/iteration_{i * 10}.png')
+      plt.title(f'Fitness: {best_fitness[-1]}, at iteration: {i * 10}')
+      plt.savefig(f'./images/sensors_graphs/{self.folder}.png')
 
   def graph_fitness(self):
     x = np.linspace(0, 250, 26)
