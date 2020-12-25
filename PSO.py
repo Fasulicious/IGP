@@ -128,13 +128,10 @@ class PSO:
   def train(self):
     for i in range(self.iterations):
       current_iteration = i + 1
-      s = time.time()
       print(f'Iteration {i+1} before get the fitness')
       # CALCULAR FITNESS Y ACTUALIZAR
       fitness = self.fitness()
       print(f'Iteration {i+1} after get the fitness')
-      e = time.time()
-      print(e-s)
       self.update(fitness)
       # AGREGAR CADA 10 ITERACIONES
       if i % 10 == 0:
