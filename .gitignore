@@ -1,5 +1,7 @@
 /images
 /results
+/old_images
+/old_results
 /__pycache__
 test.py
 /mail
