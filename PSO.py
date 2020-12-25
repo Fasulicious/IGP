@@ -61,6 +61,29 @@ class PSO:
 
   # CALCULO DEL FITNESS
   def fitness(self):
+    fitness = []
+    # SE ITERA POR CADA FAMILIA DE SENSORES (POPULATION = 20)
+    for sensors in self.x:
+      total_distance = 0
+      sensors_inside_peru = 0
+      # SE ITERA POR CADA SISMO
+      for seismic in self.seismics:
+        distances = []
+        #SE ITERA POR CADA SENSOR
+        for sensor in sensors:
+          distances.append(self.get_distance(seismic, sensor))
+        distances = np.array(distances)
+        distances = np.sort(distances)
+        total_distance += np.sum(distances[0: 3])
+      for sensor in sensors:
+        geolocation = geopip.search(lng = sensor[1], lat = sensor[0])
+        if geolocation != None and geolocation['NAME'] == 'Peru':
+          sensors_inside_peru += 1
+      current_fitness = total_distance * 2 / (1 + sensors_inside_peru / self.sensors)
+      fitness.append(current_fitness)
+    return fitness
+  '''
+  def fitness(self):
     start = time.time()
     fitness = [
       np.sum(
@@ -85,7 +108,7 @@ class PSO:
     print(end - start)
     print(fitness)
     return fitness
-
+  '''
   # SE ACTUALIZA MEJOR GLOBAL, MEJOR PERSONAL
   def update(self, fitness):
     # MEJOR GLOBAL
@@ -103,9 +126,12 @@ class PSO:
     for i in range(self.iterations):
       current_iteration = i + 1
       print(f'Iteration {i+1} before get the fitness')
+      s = time.time()
       # CALCULAR FITNESS Y ACTUALIZAR
       fitness = self.fitness()
       print(f'Iteration {i+1} after get the fitness')
+      print(time.time() - s)
+      print(fitness)
       self.update(fitness)
       # AGREGAR CADA 10 ITERACIONES
       if i % 10 == 0:
