@@ -1,6 +1,7 @@
 import geopip
 import numpy as np
 import time
+from operator import itemgetter
 np.seterr(divide='ignore', invalid='ignore')
 
 class PSO:
@@ -28,7 +29,31 @@ class PSO:
     self.global_best_sensors_collection = []
     self.best_fitness = [np.inf for _ in range(population)]
     self.best_sensors = self.x.copy()
-    
+
+  def orderMap(self, points,ord, initial= True):
+    if ((initial== False) or (np.random.rand()<=0.7)):     
+        length=len(points)
+        if length>1:
+            middle=int(length/2)
+            final=[]
+            half1=[]
+            half2=[]
+            new_ord=1-ord
+            tmp=sorted(points, key=itemgetter(ord))
+            threshold=tmp[middle-1]
+            for i in range(length):
+                if points[i][ord]<=threshold[ord]:
+                    half1.append(points[i])
+                else:
+                    half2.append(points[i])
+            half1=self.orderMap(half1,new_ord, initial=False)
+            half2=self.orderMap(half2,new_ord, initial=False)
+            final=half1+half2
+        else:
+            final=points
+        return final
+    else:
+        return points    
 
   # UBICACION DE SENSORES DENTRO DEL PERU
   def init_x(self):
@@ -38,7 +63,8 @@ class PSO:
       geolocation = geopip.search(lng = location[1], lat = location[0])
       if geolocation != None and geolocation['NAME'] == 'Peru':
         temp.append(location)
-    return temp
+    temp2 = self.orderMap(temp,0)
+    return temp2
   
   # OBTENER DISTANCIA REAL SOBRE LA TIERRA
   def get_distance(self, P, Q):
@@ -102,10 +128,13 @@ class PSO:
   def train(self):
     for i in range(self.iterations):
       current_iteration = i + 1
+      s = time.time()
       print(f'Iteration {i+1} before get the fitness')
       # CALCULAR FITNESS Y ACTUALIZAR
       fitness = self.fitness()
       print(f'Iteration {i+1} after get the fitness')
+      e = time.time()
+      print(e-s)
       self.update(fitness)
       # AGREGAR CADA 10 ITERACIONES
       if i % 10 == 0:
