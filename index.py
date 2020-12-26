@@ -9,7 +9,7 @@ def main(args):
   peruvian_seismics = np.array([s for s in seismics if s[0] < -4.5 or (geopip.search(lng = s[1], lat = s[0]) != None and (geopip.search(lng = s[1], lat = s[0])['NAME'] == 'Peru'))])
   
   for i in range(8):
-    pso = PSO(seismics = peruvian_seismics, population = 20, sensors = 52, iterations = 250, w = float(args[0]), c1 = float(args[1]), c2 = float(args[2]), static = True)
+    pso = PSO(seismics = peruvian_seismics, population = 40, sensors = 52, iterations = 250, w = float(args[0]), c1 = float(args[1]), c2 = float(args[2]), static = True)
     global_best_sensors_collection, global_best_fitness_collection = pso.train()
     with open(f'./results/{args[0]}-{args[1]}-{args[2]}_coordinates_{i}', 'wb') as file:
       np.save(file, global_best_sensors_collection)
